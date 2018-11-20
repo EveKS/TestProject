@@ -5,14 +5,14 @@ export abstract class BaseService {
   constructor() { }
 
   protected handleError(error: any) {
-    let applicationError = error.headers.get('Application-Error');
+    let applicationError = error.headers ? error.headers.get('Application-Error') : '';
 
     if (applicationError) {
       return Observable.throw(applicationError);
     }
-
-    let modelStateErrors: string | null;
-    let serverError = error.json();
+    
+    let modelStateErrors: string | null,
+      serverError = error.json ? error.json() : '';
 
     if (!serverError.type) {
       for (var key in serverError) {

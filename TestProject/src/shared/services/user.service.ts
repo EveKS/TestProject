@@ -3,6 +3,7 @@ import { BaseService } from "./base.service";
 import { Observable, BehaviorSubject } from "rxjs";
 import { Headers, RequestOptions, Http } from "@angular/http";
 import { UserRegistration } from "../models/user.registration.interface";
+import { Router } from "@angular/router";
 
 import { map, catchError } from 'rxjs/operators';
 
@@ -14,6 +15,7 @@ export class UserService extends BaseService {
   private static loggedIn = false;
 
   constructor(private _http: Http,
+    private _router: Router,
     @Inject('BASE_URL') private _baseUrl: string) {
     super();
 
@@ -21,21 +23,25 @@ export class UserService extends BaseService {
 
     UserService.loggedIn = false;
     if (typeof window !== 'undefined') {
-      UserService.loggedIn = !!localStorage.getItem('auth_token');
+      let token = localStorage.getItem('auth_token');
+
+      UserService.loggedIn = !!token;
     }
 
     UserService._authNavStatusSource.next(UserService.loggedIn);
   }
 
-  register(value: UserRegistration): Observable<UserRegistration> {
+  register(value: UserRegistration): Observable<boolean> {
     let body = JSON.stringify(value);
     let headers = new Headers({ 'Content-Type': 'application/json' });
     let options = new RequestOptions({ headers: headers });
 
     return this._http.post(this._baseUrl + "api/accounts/register", body, options)
-      .pipe(
-        map(res => res.json() as UserRegistration)
-      )
+      .pipe(map(res => {
+        let isOk = res.ok === true && res.statusText === 'OK';
+
+        return isOk
+      }))
       .pipe(catchError(this.handleError));
   }
 
@@ -50,6 +56,7 @@ export class UserService extends BaseService {
       )
       .pipe(map(res => {
         localStorage.setItem('auth_token', res.json().auth_token);
+
         UserService.loggedIn = true;
         UserService._authNavStatusSource.next(true);
 
@@ -62,6 +69,8 @@ export class UserService extends BaseService {
     localStorage.removeItem('auth_token');
     UserService.loggedIn = false;
     UserService._authNavStatusSource.next(false);
+
+    this._router.navigate(['/login')
   }
 
   isLoggedIn() {

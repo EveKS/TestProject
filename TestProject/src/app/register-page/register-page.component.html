@@ -1,3 +1,34 @@
-<p>
-  register-page works!
-</p>
+<div class="row">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header bg-white">
+        <h4 class="card-title">Create your account</h4>
+      </div>
+      <div class="card-block">
+        <form #f="ngForm" novalidate (ngSubmit)="registerUser(f)">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input id="email" type="text" required name="email" validateEmail class="form-control" placeholder="Email" ngModel #email="ngModel">
+            <small [hidden]="email.valid || (email.pristine && !submitted)" class="text-danger">Please enter a valid email</small>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input id="password" type="password" required name="password" class="form-control" placeholder="Password" ngModel>
+          </div>
+          <div class="form-group">
+            <label for="passwordConfirm">Password Confirm</label>
+            <input id="passwordConfirm" type="password"
+                   required name="passwordConfirm" class="form-control"
+                   placeholder="Password Confirm" ngModel>
+          </div>
+          <div class="form-group">
+            <button type="submit" class="btn btn-primary" [disabled]="f.invalid || isRequesting">Sign Up</button>
+          </div>
+          <div *ngIf="errors" class="alert alert-danger" role="alert">
+            <strong>Oops!</strong> {{errors}}
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

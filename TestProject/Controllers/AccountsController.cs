@@ -42,10 +42,14 @@ namespace TestProject.Controllers
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody]RegisterViewModel model)
     {
+      Console.WriteLine("Register");
+
       if (!ModelState.IsValid)
       {
         return BadRequest(ModelState);
       }
+
+      Console.WriteLine(model.Email, model.Password);
 
       var userIdentity = new User
       {
