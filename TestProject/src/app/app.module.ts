@@ -4,23 +4,42 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
+import { Routes, RouterModule } from '@angular/router';
+
 import { FormsModule } from '@angular/forms';
 import { HttpModule, XHRBackend } from '@angular/http';
-import { NavMenuComponent } from './nav-menu/nav-menu.component';
+
 import { UserService } from '../shared/services/user.service';
 import { AuthenticateXHRBackend } from './authenticate-xhr.backend';
 import { AuthGuard } from '../shared/guard/auth-guard.guard';
 
+import { NavMenuComponent } from './nav-menu/nav-menu.component';
+import { LoginPageComponent } from './login-page/login-page.component';
+import { RegisterPageComponent } from './register-page/register-page.component';
+import { HomePageComponent } from './home-page/home-page.component';
+
+const appRoutes: Routes = [
+  { path: '', component: HomePageComponent, canActivate: [AuthGuard] },
+  { path: 'home', component: HomePageComponent, canActivate: [AuthGuard] },
+  { path: 'register', component: RegisterPageComponent },
+  { path: 'login', component: LoginPageComponent },
+  { path: '**', component: HomePageComponent, canActivate: [AuthGuard] }
+];
+
 @NgModule({
   declarations: [
     AppComponent,
-    NavMenuComponent
+    NavMenuComponent,
+    LoginPageComponent,
+    RegisterPageComponent,
+    HomePageComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpModule
+    HttpModule,
+    RouterModule.forRoot(appRoutes)
   ],
   providers: [
     UserService,
