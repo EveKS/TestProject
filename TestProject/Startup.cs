@@ -1,22 +1,17 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SpaServices.AngularCli;
-using Microsoft.AspNetCore.SpaServices.Webpack;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using TestProject.Datasets;
 using TestProject.Models;
+using TestProject.Services.Classes;
+using TestProject.Services.Interfaces;
 
 namespace TestProject
 {
@@ -31,6 +26,10 @@ namespace TestProject
 
     public void ConfigureServices(IServiceCollection services)
     {
+      string connectionString = Configuration["dbConnect:DefaultConnection"];
+
+      services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connectionString));
+
       #region Identity
       services.AddIdentity<User, IdentityRole>(options =>
       {
@@ -76,6 +75,8 @@ namespace TestProject
       //  configuration.RootPath = "wwwroot/dist";
       //});
 
+      services.AddTransient<IFileService, FileService>();
+
       services.AddSingleton<IConfiguration>(this.Configuration);
     }
 
@@ -96,13 +97,8 @@ namespace TestProject
       app.UseMvcWithDefaultRoute();
 
       app.UseDefaultFiles();
-      app.UseStaticFiles();
 
-      //app.Run(async (context) =>
-      //{
-      //  context.Response.ContentType = "text/html";
-      //  await context.Response.SendFileAsync(Path.Combine(env.WebRootPath, "dist/index.html"));
-      //});
+      app.UseStaticFiles();
     }
   }
 }

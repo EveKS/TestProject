@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using TestProject.Models;
 using TestProject.Models.ViewModel.Account;
 
-namespace TestProject.Datasets
+namespace TestProject.Controllers
 {
   [Route("api/[controller]")]
   public class AccountsController : Controller
