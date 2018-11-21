@@ -70,7 +70,7 @@ export class UserService extends BaseService {
     UserService.loggedIn = false;
     UserService._authNavStatusSource.next(false);
 
-    this._router.navigate(['/login')
+    this._router.navigate(['/login']);
   }
 
   isLoggedIn() {
