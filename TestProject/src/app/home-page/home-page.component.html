@@ -1,9 +1,21 @@
-<input #file type="file" multiple (change)="upload(file.files)" />
-<br />
-<span style="font-weight:bold;color:green;" *ngIf="progress > 0 && progress < 100">
-  {{progress}}%
-</span>
+<div class="container file-upload">
+  <div class="raw">
+    <div class="col-sm">
+      <input #file type="file" multiple (change)="upload(file.files)" />
+      <br />
+      <span style="font-weight:bold;color:green;" *ngIf="progress > 0 && progress < 100">
+        {{progress}}%
+      </span>
 
-<span style="font-weight:bold;color:green;" *ngIf="message">
-  {{message}}
-</span>
+      <span style="font-weight:bold;color:green;" *ngIf="message">
+        {{message}}
+      </span>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="filesData" class="container-fluid  file-upload">
+  <div class="raw">
+    <app-image-view *ngFor="let item of filesData" [filesModel]="item"></app-image-view>
+  </div>
+</div>

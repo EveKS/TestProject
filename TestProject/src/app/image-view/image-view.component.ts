@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { FilesModel } from '../../shared/models/files-model.interface';
 
 @Component({
   selector: 'app-image-view',
@@ -6,6 +7,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./image-view.component.css']
 })
 export class ImageViewComponent implements OnInit {
+  @Input() filesModel: FilesModel;
 
   constructor() { }
 
