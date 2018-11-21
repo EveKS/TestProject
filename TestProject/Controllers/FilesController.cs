@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TestProject.Datasets;
@@ -51,7 +53,7 @@ namespace TestProject.Controllers
       this._context = context;
     }
 
-    // POST api/value/files-upload
+    // POST api/files/files-upload
     [Produces("multipart/form-data")]
     [HttpPost("files-upload"), DisableRequestSizeLimit]
     public async Task<IActionResult> FilesUpload(IFormFileCollection files)
@@ -82,11 +84,41 @@ namespace TestProject.Controllers
         item.UserId = user.Id;
       }
 
-      //await this._context.AddRangeAsync(fileeData);
+      await this._context.AddRangeAsync(fileeData);
 
-      //await this._context.SaveChangesAsync();
+      await this._context.SaveChangesAsync();
 
-      return Json($"model:{files != null}, file:{files != null}");
+      IQueryable<FilesModel> filesData =
+        this._context.FilesModels.Where(file => file.UserId == user.Id);
+
+      return Json(new {
+        Message = "Loaded",
+        FilesData = await filesData.ToListAsync()
+      });
+    }
+
+    // Get api/files/get-files
+    [HttpGet("get-files")]
+    public async Task<IActionResult> GetFiles()
+    {
+      var userName = HttpContext.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+      if (string.IsNullOrWhiteSpace(userName))
+      {
+        return Unauthorized();
+      }
+
+      var user = await _userManager.FindByNameAsync(userName);
+
+      if (user == null)
+      {
+        return Unauthorized();
+      }
+
+      IQueryable<FilesModel> filesData =
+        this._context.FilesModels.Where(file => file.UserId == user.Id);
+
+      return Json(await filesData.ToListAsync());
     }
   }
 }

@@ -18,6 +18,7 @@ import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { RegisterPageComponent } from './register-page/register-page.component';
 import { HomePageComponent } from './home-page/home-page.component';
+import { ImageViewComponent } from './image-view/image-view.component';
 
 const appRoutes: Routes = [
   { path: '', component: HomePageComponent, canActivate: [AuthGuard] },
@@ -33,7 +34,8 @@ const appRoutes: Routes = [
     NavMenuComponent,
     LoginPageComponent,
     RegisterPageComponent,
-    HomePageComponent
+    HomePageComponent,
+    ImageViewComponent
   ],
   imports: [
     BrowserModule,
