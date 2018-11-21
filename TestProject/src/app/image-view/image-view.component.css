@@ -1,0 +1,22 @@
+.image-body {
+  background-color: white;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  margin-bottom: 25px;
+  overflow: hidden;
+}
+
+  .image-body img {
+    width: 100%;
+    transition: transform .6s;
+  }
+
+    .image-body img:hover {
+      -webkit-transform: scale(1.05);
+      -ms-transform: scale(1.05);
+      transform: scale(1.05);
+    }
+
+.img-text-container {
+  text-align: center;
+  padding: 10px 20px;
+}
