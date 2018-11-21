@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -72,13 +73,13 @@ namespace TestProject
           });
       #endregion
 
-      services.AddMvc()/*.SetCompatibilityVersion(CompatibilityVersion.Version_2_1)*/;
+      services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-      //services.AddSpaStaticFiles(configuration =>
-      //{
-      //  configuration.RootPath = "wwwroot/dist";
-      //});
-      
+      services.AddSpaStaticFiles(configuration =>
+      {
+        configuration.RootPath = "wwwroot/dist";
+      });
+
       services.AddSingleton<IFileService, FileService>(option => new FileService(this.Environment));
 
       services.AddSingleton<IConfiguration>(this.Configuration);

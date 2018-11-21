@@ -1,5 +1,5 @@
 <div class="container file-upload">
-  <div class="raw">
+  <div class="row">
     <div class="col-sm">
       <input #file type="file" multiple (change)="upload(file.files)" />
       <br />
@@ -14,8 +14,8 @@
   </div>
 </div>
 
-<div *ngIf="filesData" class="container-fluid  file-upload">
-  <div class="raw">
+<div *ngIf="filesData" class="container-fluid file-upload">
+  <div class="row">
     <app-image-view *ngFor="let item of filesData" [filesModel]="item"></app-image-view>
   </div>
 </div>
