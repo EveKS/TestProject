@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using TestProject.Datasets;
 using TestProject.Models;
@@ -87,23 +89,45 @@ namespace TestProject
 
     public void Configure(IApplicationBuilder app/*, IHostingEnvironment env*/)
     {
-      app.Use(async (context, next) =>
-      {
-        await next();
-        if (context.Response.StatusCode == 404 &&
-           !Path.HasExtension(context.Request.Path.Value) &&
-           !context.Request.Path.Value.StartsWith("/api/"))
-        {
-          context.Request.Path = "/dist/index.html";
-          await next();
-        }
-      });
 
       app.UseMvcWithDefaultRoute();
-
       app.UseDefaultFiles();
-
       app.UseStaticFiles();
+
+      app.UseStaticFiles(new StaticFileOptions
+      {
+        FileProvider = new PhysicalFileProvider(
+        Path.Combine(this.Environment.WebRootPath, "files")),
+        RequestPath = "/files"
+      });
+
+      if (this.Environment.IsDevelopment())
+      {
+        app.UseDeveloperExceptionPage();
+
+        app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
+        {
+          HotModuleReplacement = true
+        });
+      }
+
+      //app.Use(async (context, next) =>
+      //{
+      //  await next();
+      //  if (context.Response.StatusCode == 404 &&
+      //     !Path.HasExtension(context.Request.Path.Value) &&
+      //     !context.Request.Path.Value.StartsWith("/api/"))
+      //  {
+      //    context.Request.Path = "/dist/index.html";
+      //    await next();
+      //  }
+      //});
+
+      //app.UseMvcWithDefaultRoute();
+
+      //app.UseDefaultFiles();
+
+      //app.UseStaticFiles();
     }
   }
 }
