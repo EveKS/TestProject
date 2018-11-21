@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using TestProject.Datasets;
 using TestProject.Models;
 using TestProject.Models.ViewModel;
 using TestProject.Services.Classes;
@@ -28,11 +29,14 @@ namespace TestProject.Controllers
 
     private readonly IFileService _fileService;
 
+    private readonly ApplicationContext _context;
+
     public FilesController(UserManager<User> userManager,
         SignInManager<User> signInManager,
         RoleManager<IdentityRole> roleManager,
         IConfiguration configuration,
-        FileService fileService)
+        FileService fileService,
+        ApplicationContext context)
     {
       this._userManager = userManager;
 
@@ -43,13 +47,15 @@ namespace TestProject.Controllers
       this._configuration = configuration;
 
       this._fileService = fileService;
+
+      this._context = context;
     }
 
     // POST api/value/files-upload
     [HttpPost("files-upload"), DisableRequestSizeLimit]
     public async Task<IActionResult> FilesUpload([FromForm]IFormFileCollection files)
     {
-      if (!ModelState.IsValid)
+      if (!ModelState.IsValid || files == null)
       {
         return BadRequest(ModelState);
       }
@@ -67,7 +73,18 @@ namespace TestProject.Controllers
       {
         return Unauthorized();
       }
-      
+
+     var fileeData = await this._fileService.UppFiles(files);
+
+      foreach (var item in fileeData)
+      {
+        item.UserId = user.Id;
+      }
+
+      //await this._context.AddRangeAsync(fileeData);
+
+      //await this._context.SaveChangesAsync();
+
       return Json($"model:{files != null}, file:{files != null}");
     }
   }
