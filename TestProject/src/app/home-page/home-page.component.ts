@@ -55,7 +55,8 @@ export class HomePageComponent implements OnInit {
 
     return new HttpHeaders({
       "Authorization": `Bearer ${authToken}`,
-      "Content-Type": "application/json"
+      // начиная с 5 версии, Content-Type выдает ошибку
+      // "Content-Type": "application/json"
     });
   }
 }

@@ -35,7 +35,7 @@ namespace TestProject.Controllers
         SignInManager<User> signInManager,
         RoleManager<IdentityRole> roleManager,
         IConfiguration configuration,
-        FileService fileService,
+        IFileService fileService,
         ApplicationContext context)
     {
       this._userManager = userManager;
@@ -52,8 +52,9 @@ namespace TestProject.Controllers
     }
 
     // POST api/value/files-upload
+    [Produces("multipart/form-data")]
     [HttpPost("files-upload"), DisableRequestSizeLimit]
-    public async Task<IActionResult> FilesUpload([FromForm]IFormFileCollection files)
+    public async Task<IActionResult> FilesUpload(IFormFileCollection files)
     {
       if (!ModelState.IsValid || files == null)
       {
