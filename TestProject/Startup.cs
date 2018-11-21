@@ -17,12 +17,16 @@ namespace TestProject
 {
   public class Startup
   {
-    public Startup(IConfiguration configuration)
-    {
-      Configuration = configuration;
-    }
-
     public IConfiguration Configuration { get; }
+
+    public IHostingEnvironment Environment { get; }
+
+    public Startup(IConfiguration configuration, IHostingEnvironment environment)
+    {
+      this.Configuration = configuration;
+
+      this.Environment = environment;
+    }
 
     public void ConfigureServices(IServiceCollection services)
     {
@@ -74,13 +78,13 @@ namespace TestProject
       //{
       //  configuration.RootPath = "wwwroot/dist";
       //});
-
-      services.AddTransient<IFileService, FileService>();
+      
+      services.AddSingleton<IFileService, FileService>(option => new FileService(this.Environment));
 
       services.AddSingleton<IConfiguration>(this.Configuration);
     }
 
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+    public void Configure(IApplicationBuilder app/*, IHostingEnvironment env*/)
     {
       app.Use(async (context, next) =>
       {

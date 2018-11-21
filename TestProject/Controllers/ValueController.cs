@@ -9,6 +9,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using TestProject.Models;
 using TestProject.Models.ViewModel;
+using TestProject.Services.Classes;
+using TestProject.Services.Interfaces;
 
 namespace TestProject.Controllers
 {
@@ -24,10 +26,13 @@ namespace TestProject.Controllers
 
     private readonly IConfiguration _configuration;
 
+    private readonly IFileService _fileService;
+
     public FilesController(UserManager<User> userManager,
         SignInManager<User> signInManager,
         RoleManager<IdentityRole> roleManager,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        FileService fileService)
     {
       this._userManager = userManager;
 
@@ -36,6 +41,8 @@ namespace TestProject.Controllers
       this._roleManager = roleManager;
 
       this._configuration = configuration;
+
+      this._fileService = fileService;
     }
 
     // POST api/value/files-upload

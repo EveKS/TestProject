@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,21 +11,26 @@ using TestProject.Services.Interfaces;
 
 namespace TestProject.Services.Classes
 {
-  class FileService : IFileService
+  public class FileService : IFileService
   {
     private const string FILE_DIRECTORI_NAME = "/files/";
 
-    async Task<IFormFileCollection> IFileService.UppFiles(IFormFileCollection file,
-      List<FilesModel> filesModels,
-      IHostingEnvironment appEnvironment)
+    private readonly IHostingEnvironment _appEnvironment;
+
+    public FileService(IHostingEnvironment appEnvironment)
     {
-      var filePath = appEnvironment.WebRootPath + FILE_DIRECTORI_NAME;
+      this._appEnvironment = appEnvironment;
+    }
+
+    async Task<ConcurrentQueue<FilesModel>> IFileService.UppFiles(IFormFileCollection files)
+    {
+      var filePath = this._appEnvironment.WebRootPath + FILE_DIRECTORI_NAME;
 
       var filesNames = new DirectoryInfo(filePath).EnumerateFiles()?.Select(f => f.Name).ToList();
 
-      IFormFileCollection uploadedFiles = file;
+      var result = new ConcurrentQueue<FilesModel>();
 
-      foreach (var uploaded in uploadedFiles)
+      foreach (var uploaded in files)
       {
         if (uploaded != null)
         {
@@ -35,17 +41,18 @@ namespace TestProject.Services.Classes
             await uploaded.CopyToAsync(fileStream);
           }
 
-          filesModels.Add(new FilesModel
+          result.Enqueue(new FilesModel
           {
             FileName = uploaded.FileName,
-            FilePath = FILE_DIRECTORI_NAME + fileName
+            FilePath = FILE_DIRECTORI_NAME + fileName,
+            DateAdded = DateTime.Now
           });
 
           filesNames.Add(fileName);
         }
       }
 
-      return uploadedFiles;
+      return result;
     }
 
     private string CreateName(List<string> filesNames, IFormFile uploaded)
