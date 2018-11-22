@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using TestProject.Datasets;
 using TestProject.Models;
 using TestProject.Services.Classes;
@@ -96,6 +98,14 @@ namespace TestProject
 
       app.UseStaticFiles(new StaticFileOptions
       {
+        OnPrepareResponse = content =>
+        {
+          var time = 7 * 24 * 60 * 60;
+
+          content.Context.Response.Headers[HeaderNames.CacheControl] = $"public,max-age={time}";
+          content.Context.Response.Headers[HeaderNames.Expires] = DateTime.UtcNow.AddDays(7).ToString("R"); // Format RFC1123
+        },
+
         FileProvider = new PhysicalFileProvider(
         Path.Combine(this.Environment.WebRootPath, "files")),
         RequestPath = "/files"

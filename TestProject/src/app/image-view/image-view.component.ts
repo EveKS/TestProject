@@ -14,4 +14,7 @@ export class ImageViewComponent implements OnInit {
   ngOnInit() {
   }
 
+  delete(id: string) {
+    console.log(id);
+  }
 }

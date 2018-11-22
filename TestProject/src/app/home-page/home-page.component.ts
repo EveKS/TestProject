@@ -1,7 +1,8 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ViewChild, ElementRef } from '@angular/core';
 import { HttpHeaders, HttpClient, HttpRequest, HttpEventType, HttpResponse } from '@angular/common/http';
 import { FilesModel } from '../../shared/models/files-model.interface';
 import { UploadFileResponse } from '../../shared/models/upload-file-response.interface';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-home-page',
@@ -9,17 +10,37 @@ import { UploadFileResponse } from '../../shared/models/upload-file-response.int
   styleUrls: ['./home-page.component.css']
 })
 export class HomePageComponent implements OnInit {
+  @ViewChild('file') fileInput: ElementRef;
+
   public progress: number;
   public message: string;
   public filesData: FilesModel[];
+  public maxPage: number = 0;
 
   constructor(private _http: HttpClient,
-    @Inject('BASE_URL') private _baseUrl: string) { }
+    private _activateRoute: ActivatedRoute,
+    @Inject('BASE_URL') private _baseUrl: string) {
+  }
 
   upload(files) {
-    if (files.length === 0)
-      return;
+    if (files.length === 0) {
+      this.fileInput.nativeElement.value = null;
 
+      return;
+    }
+
+    this._activateRoute.params.subscribe(params => {
+      let pg = params['page'];
+
+      let page: number = 0;
+
+      page = pg ? parseInt(pg, 10) : 0;
+
+      this.uploadFiles(files, page);
+    });
+  }
+
+  private uploadFiles(files, page: number) {
     const formData = new FormData();
 
     for (let file of files) {
@@ -27,6 +48,14 @@ export class HomePageComponent implements OnInit {
         formData.append('files', file);
       }
     }
+
+    if (formData.getAll('files').length === 0) {
+      this.fileInput.nativeElement.value = null;
+
+      return;
+    }
+
+    formData.append('page', page.toString());
 
     const uploadReq = new HttpRequest('POST', `${this._baseUrl}api/files/files-upload`, formData, {
       reportProgress: true,
@@ -41,36 +70,47 @@ export class HomePageComponent implements OnInit {
         this.progress = Math.round(100 * event.loaded / event.total);
       }
       else if (event.type === HttpEventType.Response) {
-        console.log('event', event, event.body);
-
         let
-          request = event.body as UploadFileResponse;
+          response = event.body as UploadFileResponse;
 
-        if (request) {
-          this.message = request.message;
+        if (response) {
+          this.message = response.message;
 
-          this.filesData = request.filesData;
+          this.filesData = response.filesData;
+
+          this.maxPage = response.maxPage;
 
           console.log(this.filesData);
         }
+
+        this.fileInput.nativeElement.value = null;
       }
     });
   }
 
   ngOnInit() {
-    this.initFilesData();
+    this.initFilesData(0);
   }
 
-  private initFilesData(): void {
-    const uploadReq = new HttpRequest('GET', `${this._baseUrl}api/files/get-files`, {
+  initFilesData(page): void {
+    console.log('initFilesData', page);
+
+    const uploadReq = new HttpRequest('GET', `${this._baseUrl}api/files/get-files/?page=${page}`, {
       headers: this.getHeaders()
     });
 
     this._http.request(uploadReq).subscribe(event => {
       if (event.type === HttpEventType.Response) {
-        this.filesData = event.body as FilesModel[];
+        let
+          response = event.body as UploadFileResponse;
 
-        console.log(this.filesData);
+        if (response) {
+          this.filesData = response.filesData;
+
+          this.maxPage = response.maxPage;
+
+          console.log(this.filesData);
+        }
       }
     });
   }

@@ -19,10 +19,11 @@ import { LoginPageComponent } from './login-page/login-page.component';
 import { RegisterPageComponent } from './register-page/register-page.component';
 import { HomePageComponent } from './home-page/home-page.component';
 import { ImageViewComponent } from './image-view/image-view.component';
+import { PaginComponent } from './pagin/pagin.component';
 
 const appRoutes: Routes = [
   { path: '', component: HomePageComponent, canActivate: [AuthGuard] },
-  { path: 'home', component: HomePageComponent, canActivate: [AuthGuard] },
+  { path: 'home/:page', component: HomePageComponent, canActivate: [AuthGuard] },
   { path: 'register', component: RegisterPageComponent },
   { path: 'login', component: LoginPageComponent },
   { path: '**', redirectTo: '/', canActivate: [AuthGuard] }
@@ -35,7 +36,8 @@ const appRoutes: Routes = [
     LoginPageComponent,
     RegisterPageComponent,
     HomePageComponent,
-    ImageViewComponent
+    ImageViewComponent,
+    PaginComponent
   ],
   imports: [
     BrowserModule,

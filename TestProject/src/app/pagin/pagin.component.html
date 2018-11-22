@@ -1,0 +1,12 @@
+<nav aria-label="Page navigation example">
+  <ul class="pagination">
+    <li class="page-item"><a class="page-link" (click)="pahing(-1)">Previous</a></li>
+    <li *ngFor="let page of getPages()"
+        class="page-item"
+        (click)="pageChange(page)"
+        routerLinkActive="active">
+      <a class="page-link" routerLink="/home/{{page}}">{{page}}</a>
+    </li>
+    <li class="page-item"><a class="page-link" (click)="pahing(1)">Next</a></li>
+  </ul>
+</nav>

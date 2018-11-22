@@ -10,7 +10,8 @@
     transition: transform .6s;
   }
 
-    .image-body img:hover {
+    .image-body img:hover,
+    .delete-btn:hover {
       -webkit-transform: scale(1.05);
       -ms-transform: scale(1.05);
       transform: scale(1.05);
@@ -19,4 +20,13 @@
 .img-text-container {
   text-align: center;
   padding: 10px 20px;
+}
+
+.delete-btn {
+  position: absolute;
+  right: 1.2rem;
+  top: .15rem;
+  color: red;
+  cursor: pointer;
+  transition: transform .6s;
 }

@@ -21,6 +21,8 @@ namespace TestProject.Controllers
   [Route("api/[controller]")]
   public class FilesController : Controller
   {
+    private const int IMAGE_IN_PAGE = 12;
+
     private readonly RoleManager<IdentityRole> _roleManager;
 
     private readonly UserManager<User> _userManager;
@@ -56,7 +58,7 @@ namespace TestProject.Controllers
     // POST api/files/files-upload
     [Produces("multipart/form-data")]
     [HttpPost("files-upload"), DisableRequestSizeLimit]
-    public async Task<IActionResult> FilesUpload(IFormFileCollection files)
+    public async Task<IActionResult> FilesUpload(IFormFileCollection files, int? page)
     {
       if (!ModelState.IsValid || files == null)
       {
@@ -77,7 +79,7 @@ namespace TestProject.Controllers
         return Unauthorized();
       }
 
-     var fileeData = await this._fileService.UppFiles(files);
+      var fileeData = await this._fileService.UppFiles(files);
 
       foreach (var item in fileeData)
       {
@@ -89,17 +91,24 @@ namespace TestProject.Controllers
       await this._context.SaveChangesAsync();
 
       IQueryable<FilesModel> filesData =
-        this._context.FilesModels.Where(file => file.UserId == user.Id);
+        this._context.FilesModels.OrderBy(fil => fil.DateAdded)
+        .Where(file => file.UserId == user.Id);
 
-      return Json(new {
+      var data = await filesData.ToListAsync();
+
+      var filesCount = data.Count;
+
+      return Json(new
+      {
         Message = "Loaded",
-        FilesData = await filesData.ToListAsync()
+        FilesData = data.Skip(IMAGE_IN_PAGE * (page ?? 0)).Take(IMAGE_IN_PAGE),
+        MaxPage = filesCount / IMAGE_IN_PAGE + (filesCount % IMAGE_IN_PAGE > 0 ? 1 : 0)
       });
     }
 
     // Get api/files/get-files
     [HttpGet("get-files")]
-    public async Task<IActionResult> GetFiles()
+    public async Task<IActionResult> GetFiles(int? page)
     {
       var userName = HttpContext.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -116,9 +125,18 @@ namespace TestProject.Controllers
       }
 
       IQueryable<FilesModel> filesData =
-        this._context.FilesModels.Where(file => file.UserId == user.Id);
+        this._context.FilesModels.OrderBy(fil => fil.DateAdded)
+        .Where(file => file.UserId == user.Id);
 
-      return Json(await filesData.ToListAsync());
+      var data = await filesData.ToListAsync();
+
+      var filesCount = data.Count;
+
+      return Json(new
+      {
+        FilesData = data.Skip(IMAGE_IN_PAGE * (page ?? 0)).Take(IMAGE_IN_PAGE),
+        MaxPage = filesCount / IMAGE_IN_PAGE + (filesCount % IMAGE_IN_PAGE > 0 ? 1 : 0)
+      });
     }
   }
 }
