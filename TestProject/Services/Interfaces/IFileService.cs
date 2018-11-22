@@ -7,6 +7,8 @@ namespace TestProject.Services.Interfaces
 {
   public interface IFileService
   {
+    Task DeleteFile(string fileName);
+
     Task<ConcurrentQueue<FilesModel>> UppFiles(IFormFileCollection files);
   }
 }

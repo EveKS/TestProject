@@ -55,6 +55,15 @@ namespace TestProject.Services.Classes
       return result;
     }
 
+    Task IFileService.DeleteFile(string fileName) => Task.Run(() => {
+      fileName = this._appEnvironment.WebRootPath + fileName;
+
+      if (File.Exists(fileName))
+      {
+        File.Delete(fileName);
+      }
+    });
+
     private string CreateName(List<string> filesNames, IFormFile uploaded)
     {
       var fileNameToChar = Enumerable.Range('a', 'z' - 'a').Select(Convert.ToChar).ToArray();

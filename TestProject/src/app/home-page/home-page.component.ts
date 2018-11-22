@@ -29,15 +29,11 @@ export class HomePageComponent implements OnInit {
       return;
     }
 
-    this._activateRoute.params.subscribe(params => {
-      let pg = params['page'];
+    let page = this._activateRoute.snapshot.params["page"]
 
-      let page: number = 0;
+    page = page ? parseInt(page, 10) : 0;
 
-      page = pg ? parseInt(pg, 10) : 0;
-
-      this.uploadFiles(files, page);
-    });
+    this.uploadFiles(files, page);
   }
 
   private uploadFiles(files, page: number) {

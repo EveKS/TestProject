@@ -16,7 +16,9 @@
 
 <div *ngIf="filesData" class="container-fluid image-container">
   <div class="row">
-    <app-image-view class="col-sm-4 col-md-3 col-lg-2" *ngFor="let item of filesData" [filesModel]="item"></app-image-view>
+    <app-image-view class="col-sm-4 col-md-3 col-lg-2"
+                    (initFilesData)="initFilesData($event)"
+                    *ngFor="let item of filesData" [filesModel]="item"></app-image-view>
   </div>
   <app-pagin *ngIf="maxPage > 1"
              (initFilesData)="initFilesData($event)"

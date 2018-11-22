@@ -126,8 +126,42 @@ namespace TestProject.Controllers
 
     // DELETE api/files/id
     [HttpDelete("{id}")]
-    public void Delete(string id)
+    public async Task<IActionResult> Delete(string id, int? page)
     {
+      if (!ModelState.IsValid || string.IsNullOrWhiteSpace(id))
+      {
+        return BadRequest(ModelState);
+      }
+
+      var userName = HttpContext.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+      if (string.IsNullOrWhiteSpace(userName))
+      {
+        return Unauthorized();
+      }
+
+      var user = await _userManager.FindByNameAsync(userName);
+
+      if (user == null)
+      {
+        return Unauthorized();
+      }
+
+      var fileData = await this._context.FilesModels
+        .FirstOrDefaultAsync(file => file.FilesModelId == id && file.UserId == user.Id);
+
+      if(fileData == null)
+      {
+        return NotFound();
+      }
+
+      await this._fileService.DeleteFile(fileData.FilePath);
+
+      this._context.FilesModels.Remove(fileData);
+
+      await this._context.SaveChangesAsync();
+
+      return Ok(fileData);
     }
   }
 }

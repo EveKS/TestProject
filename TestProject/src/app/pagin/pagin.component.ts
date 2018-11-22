@@ -1,9 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-
 @Component({
   selector: 'app-pagin',
   templateUrl: './pagin.component.html',
@@ -16,16 +13,14 @@ export class PaginComponent implements OnInit {
   constructor(private _activateRoute: ActivatedRoute,
     private _router: Router) { }
 
-  pageChange(newPage: number) {
+  pageChange() {
     let page = this._activateRoute.snapshot.params["page"]
 
     page = page ? parseInt(page, 10) : 0;
 
     console.log(page);
 
-    if (newPage !== page) {
-      this.initFilesData.emit(page);
-    }
+    this.initFilesData.emit(page);
   }
 
   ngOnInit() {
@@ -55,13 +50,12 @@ export class PaginComponent implements OnInit {
 
     if (oldPage != page) {
       this._router.navigate(['/home', page]);
+
       this.initFilesData.emit(page);
     }
   }
 
   ngOnDestroy(): void {
-    console.log('ngOnDestroy');
-
     this.initFilesData.unsubscribe();
   }
 }
