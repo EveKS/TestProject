@@ -1,6 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { range } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+
+import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-pagin',
@@ -15,19 +17,15 @@ export class PaginComponent implements OnInit {
     private _router: Router) { }
 
   pageChange(newPage: number) {
-    let page: number = 0;
+    let page = this._activateRoute.snapshot.params["page"]
 
-    this._activateRoute.params.subscribe(params => {
-      console.log(params);
+    page = page ? parseInt(page, 10) : 0;
 
-      let pg = params['page'];
+    console.log(page);
 
-      page = pg ? parseInt(pg, 10) : 0;
-
-      if (newPage !== page) {
-        this.initFilesData.emit(page);
-      }
-    });
+    if (newPage !== page) {
+      this.initFilesData.emit(page);
+    }
   }
 
   ngOnInit() {
@@ -45,18 +43,25 @@ export class PaginComponent implements OnInit {
   }
 
   pahing(add: number) {
-    let page: number = 0;
+    let page = this._activateRoute.snapshot.params["page"]
 
-    this._activateRoute.params.subscribe(params => {
-      let pg = params['page'];
+    page = page ? parseInt(page, 10) : 0;
 
-      page = pg ? parseInt(pg, 10) : 0;
+    let oldPage = page;
 
-      if ((add > 0 && this.maxPages > page + add) || (add < 0 && page > 0)) {
-        page += add;
-      }
+    if ((add > 0 && this.maxPages > page + add) || (add < 0 && page > 0)) {
+      page += add;
+    }
 
+    if (oldPage != page) {
       this._router.navigate(['/home', page]);
-    });
+      this.initFilesData.emit(page);
+    }
+  }
+
+  ngOnDestroy(): void {
+    console.log('ngOnDestroy');
+
+    this.initFilesData.unsubscribe();
   }
 }

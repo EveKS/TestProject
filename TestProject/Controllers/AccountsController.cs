@@ -20,18 +20,13 @@ namespace TestProject.Controllers
 
     private readonly UserManager<User> _userManager;
 
-    private readonly SignInManager<User> _signInManager;
-
     private readonly IConfiguration _configuration;
 
     public AccountsController(UserManager<User> userManager,
-        SignInManager<User> signInManager,
         RoleManager<IdentityRole> roleManager,
         IConfiguration configuration)
     {
       this._userManager = userManager;
-
-      this._signInManager = signInManager;
 
       this._roleManager = roleManager;
 
